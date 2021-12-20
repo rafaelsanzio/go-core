@@ -15,6 +15,7 @@ var (
 	ErrUnknownErrorType      = _new("CMN008", "error unknown error type")
 	ErrInvalidDate           = _new("CMN009", "error invalid date format")
 	ErrConvertingStringToInt = _new("CMN010", "error converting string to int")
+	ErrGettingParam          = _new("CMN011", "error getting param")
 )
 
 // pkg/api
