@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/rafaelsanzio/go-core/pkg/applog"
 	"github.com/rafaelsanzio/go-core/pkg/errs"
@@ -38,25 +37,22 @@ func SetUserRepo(repo user.UserRepo) {
 }
 
 func (repo userRepo) Insert(ctx context.Context, u user.User) errs.AppError {
-	fmt.Println("Inserting user: ", u)
 	_, err := repo.store.InsertOne(ctx, UserCollection, &u)
 	return err
 }
 
-func (repo userRepo) GetUser(ctx context.Context, id string) (user.User, errs.AppError) {
+func (repo userRepo) GetUser(ctx context.Context, id string) (*user.User, errs.AppError) {
 	filter := query.Filter{
 		"id": id,
 	}
-
-	fmt.Println("Getting user: ", id)
 
 	opts := query.FindOneOptions{}
 
 	mUser := user.User{}
 	err := repo.store.FindOne(ctx, UserCollection, filter, &mUser, opts)
 	if err != nil {
-		return mUser, errs.ErrMongoFindOne.Throwf(applog.Log, "for collection: %s, and ID: %s, err: [%v]", UserCollection, id, err)
+		return &mUser, errs.ErrMongoFindOne.Throwf(applog.Log, "for collection: %s, and ID: %s, err: [%v]", UserCollection, id, err)
 	}
 
-	return mUser, nil
+	return &mUser, nil
 }
