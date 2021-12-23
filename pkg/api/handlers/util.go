@@ -18,3 +18,7 @@ func httpUnprocessableEntity(w http.ResponseWriter, message string) {
 func httpInternalServerError(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusInternalServerError)
 }
+
+func httpNotFound(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusNotFound)
+}
