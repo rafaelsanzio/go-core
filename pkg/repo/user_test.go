@@ -27,7 +27,7 @@ func TestUserRepoGetUser(t *testing.T) {
 	err := GetUserRepo().Insert(ctx, newUser)
 	assert.NoError(t, err)
 
-	user, err := GetUserRepo().GetUser(ctx, newUser.ID)
+	user, err := GetUserRepo().Get(ctx, newUser.ID)
 	fmt.Println("user: ", user)
 	assert.NoError(t, err)
 
