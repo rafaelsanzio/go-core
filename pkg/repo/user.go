@@ -41,7 +41,7 @@ func (repo userRepo) Insert(ctx context.Context, u user.User) errs.AppError {
 	return err
 }
 
-func (repo userRepo) GetUser(ctx context.Context, id string) (*user.User, errs.AppError) {
+func (repo userRepo) Get(ctx context.Context, id string) (*user.User, errs.AppError) {
 	filter := query.Filter{
 		"id": id,
 	}

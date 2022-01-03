@@ -24,5 +24,5 @@ func (m MockUserRepo) GetUser(ctx context.Context, id string) (*user.User, errs.
 	if m.GetUserFunc != nil {
 		return m.GetUserFunc(ctx, id)
 	}
-	return m.UserRepo.GetUser(ctx, id)
+	return m.UserRepo.Get(ctx, id)
 }
