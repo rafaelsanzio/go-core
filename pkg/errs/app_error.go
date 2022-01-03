@@ -94,7 +94,7 @@ func (te *appError) Fatalf(log applog.Logger, format string, args ...interface{}
 }
 
 func (te *appError) Throw(log applog.Logger) AppError {
-	var newError = &appError{
+	newError := &appError{
 		msg:         te.msg,
 		code:        te.code,
 		annotations: te.annotations,
