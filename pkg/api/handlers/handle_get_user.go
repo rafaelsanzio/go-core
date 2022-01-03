@@ -21,7 +21,7 @@ func HandleGetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := repo.GetUserRepo().GetUser(ctx, id)
+	user, err := repo.GetUserRepo().Get(ctx, id)
 	if err != nil {
 		httpInternalServerError(w)
 		return
