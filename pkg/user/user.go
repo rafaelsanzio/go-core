@@ -8,7 +8,7 @@ import (
 
 type UserRepo interface {
 	Insert(ctx context.Context, u User) errs.AppError
-	GetUser(ctx context.Context, id string) (*User, errs.AppError)
+	Get(ctx context.Context, id string) (*User, errs.AppError)
 }
 
 type User struct {
