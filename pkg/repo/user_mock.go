@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/rafaelsanzio/go-core/pkg/errs"
 	"github.com/rafaelsanzio/go-core/pkg/user"
@@ -18,7 +17,6 @@ func (m MockUserRepo) Insert(ctx context.Context, u user.User) errs.AppError {
 	if m.InsertFunc != nil {
 		return m.InsertFunc(ctx, u)
 	}
-	fmt.Println("InsertFunc is nil", u)
 	return m.UserRepo.Insert(ctx, u)
 }
 
