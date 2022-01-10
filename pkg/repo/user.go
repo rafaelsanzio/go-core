@@ -56,3 +56,37 @@ func (repo userRepo) Get(ctx context.Context, id string) (*user.User, errs.AppEr
 
 	return &mUser, nil
 }
+
+func (repo userRepo) List(ctx context.Context) ([]user.User, errs.AppError) {
+	filter := query.Filter{}
+
+	opts := query.FindOptions{}
+	mUser := []user.User{}
+	users, err := repo.store.Find(ctx, UserCollection, filter, opts)
+	if err != nil {
+		return mUser, errs.ErrMongoFind.Throwf(applog.Log, "for collection: %s, err: [%v]", UserCollection, err)
+	}
+
+	defer func() {
+		_ = users.Close(ctx)
+	}()
+
+	for {
+		if users.Err() != nil {
+			return mUser, err
+		}
+
+		if ok := users.Next(ctx); !ok {
+			break
+		}
+
+		var u user.User
+		if err_ := users.Decode(&u); err_ != nil {
+			return mUser, err
+		}
+
+		mUser = append(mUser, u)
+	}
+
+	return mUser, nil
+}
