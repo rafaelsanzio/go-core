@@ -9,8 +9,9 @@ import (
 
 type MockUserRepo struct {
 	user.UserRepo
-	InsertFunc  func(ctx context.Context, u user.User) errs.AppError
-	GetUserFunc func(ctx context.Context, id string) (*user.User, errs.AppError)
+	InsertFunc func(ctx context.Context, u user.User) errs.AppError
+	GetFunc    func(ctx context.Context, id string) (*user.User, errs.AppError)
+	ListFunc   func(ctx context.Context) ([]user.User, errs.AppError)
 }
 
 func (m MockUserRepo) Insert(ctx context.Context, u user.User) errs.AppError {
@@ -20,9 +21,16 @@ func (m MockUserRepo) Insert(ctx context.Context, u user.User) errs.AppError {
 	return m.UserRepo.Insert(ctx, u)
 }
 
-func (m MockUserRepo) GetUser(ctx context.Context, id string) (*user.User, errs.AppError) {
-	if m.GetUserFunc != nil {
-		return m.GetUserFunc(ctx, id)
+func (m MockUserRepo) Get(ctx context.Context, id string) (*user.User, errs.AppError) {
+	if m.GetFunc != nil {
+		return m.GetFunc(ctx, id)
 	}
 	return m.UserRepo.Get(ctx, id)
+}
+
+func (m MockUserRepo) List(ctx context.Context) ([]user.User, errs.AppError) {
+	if m.ListFunc != nil {
+		return m.ListFunc(ctx)
+	}
+	return m.UserRepo.List(ctx)
 }
