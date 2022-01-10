@@ -18,7 +18,7 @@ import (
 
 func TestHandleGetUser(t *testing.T) {
 	repo.SetUserRepo(repo.MockUserRepo{
-		GetUserFunc: func(ctx context.Context, id string) (*user.User, errs.AppError) {
+		GetFunc: func(ctx context.Context, id string) (*user.User, errs.AppError) {
 			if id == "1" {
 				userMock := model.PrototypeUser()
 				return &userMock, nil
