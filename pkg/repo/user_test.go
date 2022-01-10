@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/rafaelsanzio/go-core/pkg/model"
@@ -20,7 +19,7 @@ func TestUserRepoInsert(t *testing.T) {
 	_ = store.GetStore().DeleteOne(ctx, UserCollection, newUser.ID)
 }
 
-func TestUserRepoGetUser(t *testing.T) {
+func TestUserRepoGet(t *testing.T) {
 	ctx := context.Background()
 	newUser := model.PrototypeUser()
 
@@ -28,7 +27,6 @@ func TestUserRepoGetUser(t *testing.T) {
 	assert.NoError(t, err)
 
 	user, err := GetUserRepo().Get(ctx, newUser.ID)
-	fmt.Println("user: ", user)
 	assert.NoError(t, err)
 
 	assert.Equal(t, newUser.ID, user.ID)
@@ -36,4 +34,22 @@ func TestUserRepoGetUser(t *testing.T) {
 	assert.Equal(t, newUser.Age, user.Age)
 
 	_ = store.GetStore().DeleteOne(ctx, UserCollection, newUser.ID)
+}
+
+func TestUserRepoList(t *testing.T) {
+	ctx := context.Background()
+	newUser := model.PrototypeUser()
+
+	err := GetUserRepo().Insert(ctx, newUser)
+	assert.NoError(t, err)
+	err = GetUserRepo().Insert(ctx, newUser)
+	assert.NoError(t, err)
+
+	users, err := GetUserRepo().List(ctx)
+	assert.NoError(t, err)
+
+	assert.Equal(t, 2, len(users))
+
+	_ = store.GetStore().DeleteOne(ctx, UserCollection, users[0].ID)
+	_ = store.GetStore().DeleteOne(ctx, UserCollection, users[1].ID)
 }
