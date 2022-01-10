@@ -43,4 +43,10 @@ var routes = []Route{
 		Path:    "/users/:id",
 		Handler: handlers.HandleAdapter(handlers.HandleGetUser),
 	},
+	{
+		Name:    "List Users",
+		Methods: []string{http.MethodGet},
+		Path:    "/users",
+		Handler: handlers.HandleAdapter(handlers.HandleListUser),
+	},
 }
