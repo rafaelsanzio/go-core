@@ -90,3 +90,27 @@ func (repo userRepo) List(ctx context.Context) ([]user.User, errs.AppError) {
 
 	return mUser, nil
 }
+
+func (repo userRepo) Update(ctx context.Context, u user.User) (*user.User, errs.AppError) {
+	res := user.User{}
+	filter := query.Filter{
+		"id": u.GetID(),
+	}
+
+	err := repo.store.FindOne(ctx, UserCollection, filter, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	if res.ID == "" {
+		return nil, errs.ErrMongoFindOne.Throwf(applog.Log, "for collection: %s, and ID: %s, err: [%v]", UserCollection, u.GetID(), err)
+	}
+
+	u.ID = res.ID
+	err = repo.store.UpdateOne(ctx, UserCollection, &u)
+	if err != nil {
+		return nil, errs.ErrMongoUpdateOne.Throwf(applog.Log, "for collection: %s, and ID: %s, err: [%v]", UserCollection, u.GetID(), err)
+	}
+
+	return &u, nil
+}
