@@ -12,6 +12,7 @@ type MockUserRepo struct {
 	InsertFunc func(ctx context.Context, u user.User) errs.AppError
 	GetFunc    func(ctx context.Context, id string) (*user.User, errs.AppError)
 	ListFunc   func(ctx context.Context) ([]user.User, errs.AppError)
+	UpdateFunc func(ctx context.Context, u user.User) (*user.User, errs.AppError)
 }
 
 func (m MockUserRepo) Insert(ctx context.Context, u user.User) errs.AppError {
@@ -33,4 +34,11 @@ func (m MockUserRepo) List(ctx context.Context) ([]user.User, errs.AppError) {
 		return m.ListFunc(ctx)
 	}
 	return m.UserRepo.List(ctx)
+}
+
+func (m MockUserRepo) Update(ctx context.Context, u user.User) (*user.User, errs.AppError) {
+	if m.UpdateFunc != nil {
+		return m.UpdateFunc(ctx, u)
+	}
+	return m.UserRepo.Update(ctx, u)
 }
