@@ -13,7 +13,7 @@ func TestEnsureUnique(t *testing.T) {
 	duplicateCode := "ABC123"
 	defer func() {
 		if r := recover(); r != nil {
-			assert.Equal(t, r, fmt.Sprintf("TagError Code %v already exists", duplicateCode))
+			assert.Equal(t, r, fmt.Sprintf("AppError Code %v already exists", duplicateCode))
 		} else {
 			assert.NotNil(t, r)
 		}
@@ -27,7 +27,7 @@ func TestEnsureFormat_1(t *testing.T) {
 	badCode := "ABC1234"
 	defer func() {
 		if r := recover(); r != nil {
-			assert.Equal(t, r, fmt.Sprintf("TagError Code must have format ABC123 but is %s", badCode))
+			assert.Equal(t, r, fmt.Sprintf("AppError Code must have format ABC123 but is %s", badCode))
 		} else {
 			assert.NotNil(t, r)
 		}
@@ -40,7 +40,7 @@ func TestEnsureFormat_2(t *testing.T) {
 	badCode := "ABCD123"
 	defer func() {
 		if r := recover(); r != nil {
-			assert.Equal(t, r, fmt.Sprintf("TagError Code must have format ABC123 but is %s", badCode))
+			assert.Equal(t, r, fmt.Sprintf("AppError Code must have format ABC123 but is %s", badCode))
 		} else {
 			assert.NotNil(t, r)
 		}
@@ -53,7 +53,7 @@ func TestEnsureFormat_3(t *testing.T) {
 	badCode := "abc123"
 	defer func() {
 		if r := recover(); r != nil {
-			assert.Equal(t, r, fmt.Sprintf("TagError Code must have format ABC123 but is %s", badCode))
+			assert.Equal(t, r, fmt.Sprintf("AppError Code must have format ABC123 but is %s", badCode))
 		} else {
 			assert.NotNil(t, r)
 		}
@@ -66,7 +66,7 @@ func TestEnsureFormat_4(t *testing.T) {
 	badCode := ""
 	defer func() {
 		if r := recover(); r != nil {
-			assert.Equal(t, r, fmt.Sprintf("TagError Code must have format ABC123 but is %s", badCode))
+			assert.Equal(t, r, fmt.Sprintf("AppError Code must have format ABC123 but is %s", badCode))
 		} else {
 			assert.NotNil(t, r)
 		}
