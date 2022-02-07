@@ -49,4 +49,10 @@ var routes = []Route{
 		Path:    "/users",
 		Handler: handlers.HandleAdapter(handlers.HandleListUser),
 	},
+	{
+		Name:    "Update Users",
+		Methods: []string{http.MethodPut},
+		Path:    "/users/:id",
+		Handler: handlers.HandleAdapter(handlers.HandleUpdateUser),
+	},
 }
