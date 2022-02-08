@@ -84,3 +84,19 @@ func TestUserRepoUpdate(t *testing.T) {
 	assert.Equal(t, newUser.Name, userUpdated.Name)
 	assert.Equal(t, newUser.Age, userUpdated.Age)
 }
+
+func TestUserRepoDelete(t *testing.T) {
+	ctx := context.Background()
+
+	SetUserRepo(MockUserRepo{
+		DeleteFunc: func(ctx context.Context, id string) errs.AppError {
+			return nil
+		},
+	})
+	defer SetUserRepo(nil)
+
+	newUser := model.PrototypeUser()
+
+	err := GetUserRepo().Delete(ctx, newUser.GetID())
+	assert.NoError(t, err)
+}
