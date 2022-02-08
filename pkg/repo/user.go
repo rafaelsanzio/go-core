@@ -114,3 +114,8 @@ func (repo userRepo) Update(ctx context.Context, u user.User) (*user.User, errs.
 
 	return &u, nil
 }
+
+func (repo userRepo) Delete(ctx context.Context, id string) errs.AppError {
+	err := repo.store.DeleteOne(ctx, UserCollection, id)
+	return err
+}
