@@ -11,6 +11,7 @@ type UserRepo interface {
 	Get(ctx context.Context, id string) (*User, errs.AppError)
 	List(ctx context.Context) ([]User, errs.AppError)
 	Update(ctx context.Context, u User) (*User, errs.AppError)
+	Delete(ctx context.Context, id string) errs.AppError
 }
 
 type User struct {
