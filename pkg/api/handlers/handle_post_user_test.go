@@ -29,7 +29,7 @@ func TestHandlePostUser(t *testing.T) {
 
 	goodReq.Body = ioutil.NopCloser(bytes.NewReader(body))
 
-	noBodyReq := httptest.NewRequest(http.MethodGet, "/users", nil)
+	noBodyReq := httptest.NewRequest(http.MethodPost, "/users", nil)
 	noBodyReq = mux.SetURLVars(noBodyReq, map[string]string{})
 
 	testCases := []struct {
@@ -40,7 +40,7 @@ func TestHandlePostUser(t *testing.T) {
 		{
 			Name:               "Should return 200 if successful",
 			Request:            goodReq,
-			ExpectedStatusCode: 200,
+			ExpectedStatusCode: 201,
 		}, {
 			Name:               "Should return bad request",
 			Request:            noBodyReq,
@@ -99,6 +99,7 @@ func TestConvertPayloadToUser(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Log(tc.Name)
+
 		user, err := convertPayloadToUser(tc.Payload)
 		if tc.ExpectError {
 			assert.NotNil(t, err)
@@ -107,6 +108,50 @@ func TestConvertPayloadToUser(t *testing.T) {
 			assert.Equal(t, tc.ExpectedUser.ID, user.ID)
 			assert.Equal(t, tc.ExpectedUser.Name, user.Name)
 			assert.Equal(t, tc.ExpectedUser.Age, user.Age)
+		}
+	}
+}
+
+func TestDecodeUserRequest(t *testing.T) {
+	goodReq := httptest.NewRequest(http.MethodPost, "/users", nil)
+	goodReq = mux.SetURLVars(goodReq, map[string]string{})
+
+	body, err := json.Marshal(UserEntityPayload{
+		Name: "John Doe",
+		Age:  "38",
+	})
+	assert.Equal(t, nil, err)
+
+	goodReq.Body = ioutil.NopCloser(bytes.NewReader(body))
+
+	noBodyReq := httptest.NewRequest(http.MethodPost, "/users", nil)
+	noBodyReq = mux.SetURLVars(noBodyReq, map[string]string{})
+
+	testCases := []struct {
+		Name          string
+		Request       *http.Request
+		Payload       *UserEntityPayload
+		ExpectedError bool
+	}{
+		{
+			Name:    "Test Case: 1 - correct body, no error",
+			Request: goodReq, Payload: &UserEntityPayload{
+				Name: "John Doe",
+				Age:  "38",
+			}, ExpectedError: false,
+		},
+		{Name: "Test Case: 2 - no body, error found", Request: noBodyReq, Payload: nil, ExpectedError: true},
+	}
+
+	for _, tc := range testCases {
+		t.Log(tc.Name)
+
+		decodedPayload, err := decodeUserRequest(tc.Request)
+		if tc.ExpectedError {
+			assert.NotNil(t, err)
+		} else {
+			assert.Equal(t, tc.Payload.Name, decodedPayload.Name)
+			assert.Equal(t, tc.Payload.Age, decodedPayload.Age)
 		}
 	}
 }
