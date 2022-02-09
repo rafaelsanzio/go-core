@@ -31,7 +31,7 @@ func HandlePostUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(200)
+	w.WriteHeader(201)
 }
 
 func decodeUserRequest(r *http.Request) (UserEntityPayload, errs.AppError) {
@@ -51,6 +51,7 @@ func convertPayloadToUser(u UserEntityPayload) (user.User, errs.AppError) {
 	if err != nil {
 		return user.User{}, errs.ErrConvertingStringToInt.Throwf(applog.Log, errs.ErrFmt, err)
 	}
+
 	result := user.User{
 		Name: u.Name,
 		Age:  age,
