@@ -30,33 +30,33 @@ func TestHandleGetUser(t *testing.T) {
 	defer repo.SetUserRepo(nil)
 
 	testCases := []struct {
-		name               string
-		id                 string
-		expectedStatusCode int
+		Name               string
+		ID                 string
+		ExpectedStatusCode int
 	}{
 		{
-			"Success handle get user",
-			"1",
-			200,
+			Name:               "Success handle get user",
+			ID:                 "1",
+			ExpectedStatusCode: 200,
 		},
 		{
-			"Not Found handle get user",
-			"",
-			404,
+			Name:               "Not Found handle get user",
+			ID:                 "",
+			ExpectedStatusCode: 404,
 		},
 	}
 
 	for _, tc := range testCases {
-		t.Log(tc.name)
+		t.Log(tc.Name)
 
 		req, err := http.NewRequest(http.MethodGet, "users/:id", nil)
-		req = mux.SetURLVars(req, map[string]string{"id": tc.id})
+		req = mux.SetURLVars(req, map[string]string{"id": tc.ID})
 		assert.NoError(t, err)
 		res := httptest.NewRecorder()
 
 		HandleGetUser(res, req)
 
-		assert.Equal(t, tc.expectedStatusCode, res.Code)
+		assert.Equal(t, tc.ExpectedStatusCode, res.Code)
 		t.Logf("Response Body: %v", res.Body)
 
 		if res.Code == 200 {
