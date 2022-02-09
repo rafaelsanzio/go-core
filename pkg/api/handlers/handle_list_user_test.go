@@ -31,25 +31,25 @@ func TestHandleListUser(t *testing.T) {
 	defer repo.SetUserRepo(nil)
 
 	testCases := []struct {
-		name               string
-		expectedStatusCode int
+		Name               string
+		ExpectedStatusCode int
 	}{
 		{
-			"Success handle list user",
-			200,
+			Name:               "Success handle list user",
+			ExpectedStatusCode: 200,
 		},
 	}
 
 	for _, tc := range testCases {
-		t.Log(tc.name)
+		t.Log(tc.Name)
 
-		req, err := http.NewRequest(http.MethodGet, "users", nil)
+		req, err := http.NewRequest(http.MethodGet, "/users", nil)
 		assert.NoError(t, err)
 		res := httptest.NewRecorder()
 
 		HandleListUser(res, req)
 
-		assert.Equal(t, tc.expectedStatusCode, res.Code)
+		assert.Equal(t, tc.ExpectedStatusCode, res.Code)
 		t.Logf("Response Body: %v", res.Body)
 
 		if res.Code == 200 {
