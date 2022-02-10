@@ -59,6 +59,6 @@ var routes = []Route{
 		Name:    "Delete User",
 		Methods: []string{http.MethodDelete},
 		Path:    "/users/:id",
-		Handler: handlers.HandleAdapter(handlers.HandleUpdateUser),
+		Handler: handlers.HandleAdapter(handlers.HandleDeleteUser),
 	},
 }
