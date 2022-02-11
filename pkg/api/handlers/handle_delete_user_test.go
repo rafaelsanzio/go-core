@@ -16,10 +16,6 @@ import (
 func TestHandleDeleteUser(t *testing.T) {
 	repo.SetUserRepo(repo.MockUserRepo{
 		DeleteFunc: func(ctx context.Context, id string) errs.AppError {
-			if id == "1" {
-				return nil
-			}
-
 			return nil
 		},
 	})
