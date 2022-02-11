@@ -33,6 +33,13 @@ func TestHandleUpdateUser(t *testing.T) {
 	noBodyReq := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/users/%s", "1"), nil)
 	noBodyReq = mux.SetURLVars(noBodyReq, map[string]string{})
 
+	repo.SetUserRepo(repo.MockUserRepo{
+		UpdateFunc: func(ctx context.Context, u user.User) (*user.User, errs.AppError) {
+			return &u, nil
+		},
+	})
+	defer repo.SetUserRepo(nil)
+
 	testCases := []struct {
 		Name               string
 		Request            *http.Request
@@ -43,18 +50,11 @@ func TestHandleUpdateUser(t *testing.T) {
 			Request:            goodReq,
 			ExpectedStatusCode: 200,
 		}, {
-			Name:               "Should return bad request",
+			Name:               "Should return 422 bad request",
 			Request:            noBodyReq,
 			ExpectedStatusCode: 422,
 		},
 	}
-
-	repo.SetUserRepo(repo.MockUserRepo{
-		UpdateFunc: func(ctx context.Context, u user.User) (*user.User, errs.AppError) {
-			return &u, nil
-		},
-	})
-	defer repo.SetUserRepo(nil)
 
 	for _, tc := range testCases {
 		t.Log(tc.Name)
