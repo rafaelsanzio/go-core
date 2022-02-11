@@ -32,28 +32,28 @@ func TestHandlePostUser(t *testing.T) {
 	noBodyReq := httptest.NewRequest(http.MethodPost, "/users", nil)
 	noBodyReq = mux.SetURLVars(noBodyReq, map[string]string{})
 
-	testCases := []struct {
-		Name               string
-		Request            *http.Request
-		ExpectedStatusCode int
-	}{
-		{
-			Name:               "Should return 200 if successful",
-			Request:            goodReq,
-			ExpectedStatusCode: 201,
-		}, {
-			Name:               "Should return bad request",
-			Request:            noBodyReq,
-			ExpectedStatusCode: 422,
-		},
-	}
-
 	repo.SetUserRepo(repo.MockUserRepo{
 		InsertFunc: func(ctx context.Context, user user.User) errs.AppError {
 			return nil
 		},
 	})
 	defer repo.SetUserRepo(nil)
+
+	testCases := []struct {
+		Name               string
+		Request            *http.Request
+		ExpectedStatusCode int
+	}{
+		{
+			Name:               "Should return 201 if successful",
+			Request:            goodReq,
+			ExpectedStatusCode: 201,
+		}, {
+			Name:               "Should return 422 bad request",
+			Request:            noBodyReq,
+			ExpectedStatusCode: 422,
+		},
+	}
 
 	for _, tc := range testCases {
 		t.Log(tc.Name)
