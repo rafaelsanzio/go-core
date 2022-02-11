@@ -31,12 +31,12 @@ func TestHandleDeleteUser(t *testing.T) {
 		ExpectedStatusCode int
 	}{
 		{
-			Name:               "Success handle get user",
+			Name:               "Success handle delete user",
 			ID:                 "1",
 			ExpectedStatusCode: 204,
 		},
 		{
-			Name:               "Not Found handle get user",
+			Name:               "Not Found handle delete user",
 			ID:                 "",
 			ExpectedStatusCode: 404,
 		},
