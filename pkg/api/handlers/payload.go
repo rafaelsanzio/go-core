@@ -6,6 +6,6 @@ type OkPayload struct {
 }
 
 type UserEntityPayload struct {
-	Name string
-	Age  string
+	Name string `json:"name,omitempty"`
+	Age  string `json:"age,omitempty"`
 }
