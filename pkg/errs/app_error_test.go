@@ -23,56 +23,27 @@ func TestEnsureUnique(t *testing.T) {
 	_ = _new(duplicateCode, "err2")
 }
 
-func TestEnsureFormat_1(t *testing.T) {
-	badCode := "ABC1234"
-	defer func() {
-		if r := recover(); r != nil {
-			assert.Equal(t, r, fmt.Sprintf("AppError Code must have format ABC123 but is %s", badCode))
-		} else {
-			assert.NotNil(t, r)
-		}
-	}()
+func TestEnsureFormatWithBadCode(t *testing.T) {
+	testCases := []struct {
+		Code string
+	}{
+		{Code: "ABC1234"},
+		{Code: "ABCD123"},
+		{Code: "abc123"},
+		{Code: ""},
+	}
 
-	_ = _new(badCode, "err1")
-}
+	for _, tc := range testCases {
+		defer func() {
+			if r := recover(); r != nil {
+				assert.Equal(t, r, fmt.Sprintf("AppError Code must have format ABC123 but is %s", tc.Code))
+			} else {
+				assert.NotNil(t, r)
+			}
+		}()
 
-func TestEnsureFormat_2(t *testing.T) {
-	badCode := "ABCD123"
-	defer func() {
-		if r := recover(); r != nil {
-			assert.Equal(t, r, fmt.Sprintf("AppError Code must have format ABC123 but is %s", badCode))
-		} else {
-			assert.NotNil(t, r)
-		}
-	}()
-
-	_ = _new(badCode, "err1")
-}
-
-func TestEnsureFormat_3(t *testing.T) {
-	badCode := "abc123"
-	defer func() {
-		if r := recover(); r != nil {
-			assert.Equal(t, r, fmt.Sprintf("AppError Code must have format ABC123 but is %s", badCode))
-		} else {
-			assert.NotNil(t, r)
-		}
-	}()
-
-	_ = _new(badCode, "err1")
-}
-
-func TestEnsureFormat_4(t *testing.T) {
-	badCode := ""
-	defer func() {
-		if r := recover(); r != nil {
-			assert.Equal(t, r, fmt.Sprintf("AppError Code must have format ABC123 but is %s", badCode))
-		} else {
-			assert.NotNil(t, r)
-		}
-	}()
-
-	_ = _new(badCode, "err1")
+		_ = _new(tc.Code, "err")
+	}
 }
 
 func TestAppErrorAsInterface(t *testing.T) {
@@ -88,7 +59,7 @@ func TestAppErrorAsInterface(t *testing.T) {
 	panic(ErrLoadingTimeZone)
 }
 
-func TestAppError_Code(t *testing.T) {
+func TestAppErrorCode(t *testing.T) {
 	log := applog.Log
 	err := ErrLoadingTimeZone.Throw(log)
 	te := err.(*appError)
@@ -102,14 +73,14 @@ func TestAppError_Code(t *testing.T) {
 	assert.True(t, correct)
 }
 
-func TestAppError_Error(t *testing.T) {
+func TestAppErrorError(t *testing.T) {
 	newError := _new("TST000", "newError")
 	expected := "TST000: newError"
 	actual := newError.Error()
 	assert.Equal(t, expected, actual)
 }
 
-func TestAppError_Throw(t *testing.T) {
+func TestAppErrorThrow(t *testing.T) {
 	newError := _new("TST001", "newError")
 
 	// test nil ctx
@@ -128,7 +99,7 @@ func TestAppError_Throw(t *testing.T) {
 	assert.False(t, newError == newerError)
 }
 
-func TestAppError_Throwf(t *testing.T) {
+func TestAppErrorThrowf(t *testing.T) {
 	newError := _new("TST002", "newError")
 
 	// test nil ctx
