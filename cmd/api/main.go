@@ -25,8 +25,7 @@ func main() {
 	}
 
 	ctx, cancFunc := context.WithTimeout(context.Background(), 10*time.Second)
-
-	log.Println(cancFunc)
+	defer cancFunc()
 
 	err = client.Connect(ctx)
 	if err != nil {
