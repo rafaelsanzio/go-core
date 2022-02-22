@@ -24,13 +24,21 @@ func main() {
 		_ = errs.ErrMongoConnect.Throwf(applog.Log, errs.ErrFmt, err)
 	}
 
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancFunc := context.WithTimeout(context.Background(), 10*time.Second)
+
+	log.Println(cancFunc)
+
 	err = client.Connect(ctx)
 	if err != nil {
 		_ = errs.ErrMongoConnect.Throwf(applog.Log, errs.ErrFmt, err)
 	}
 
-	defer client.Disconnect(ctx)
+	defer func() {
+		err = client.Disconnect(ctx)
+		if err != nil {
+			_ = errs.ErrMongoConnect.Throwf(applog.Log, errs.ErrFmt, err)
+		}
+	}()
 
 	log.Println("MongoDB server is healthy.")
 	log.Fatal(http.ListenAndServe(":8000", api.NewRouter()))
