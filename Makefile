@@ -8,6 +8,9 @@ LINTER=golangci-lint
 
 all: test build
 
+mod:
+	go mod tidy
+
 test:
 		$(GOTEST) ./... -v
 
