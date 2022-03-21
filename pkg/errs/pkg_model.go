@@ -1,3 +1,3 @@
 package errs
 
-var ErrInvalidStatus = _new("MDL001", "invalid status.")
+var ErrInvalidStatus = _new("MDL001", "invalid status")
