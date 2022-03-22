@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"time"
 
 	"github.com/rafaelsanzio/go-core/pkg/errs"
 )
@@ -15,9 +16,12 @@ type UserRepo interface {
 }
 
 type User struct {
-	ID   string `bson:"_id"`
-	Name string
-	Age  int
+	ID        string `bson:"_id"`
+	FirstName string
+	LastName  string
+	Username  string
+	Email     string
+	CreatedAt time.Time
 }
 
 func (u User) GetID() string {
