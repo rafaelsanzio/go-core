@@ -43,8 +43,10 @@ func TestUserRepoGet(t *testing.T) {
 	user, err := GetUserRepo().Get(ctx, "new-user-id")
 	assert.NoError(t, err)
 
-	assert.Equal(t, newUser.Name, user.Name)
-	assert.Equal(t, newUser.Age, user.Age)
+	assert.Equal(t, newUser.FirstName, user.FirstName)
+	assert.Equal(t, newUser.LastName, user.LastName)
+	assert.Equal(t, newUser.Username, user.Username)
+	assert.Equal(t, newUser.Email, user.Email)
 }
 
 func TestUserRepoList(t *testing.T) {
@@ -81,8 +83,10 @@ func TestUserRepoUpdate(t *testing.T) {
 	userUpdated, err := GetUserRepo().Update(ctx, newUser)
 	assert.NoError(t, err)
 
-	assert.Equal(t, newUser.Name, userUpdated.Name)
-	assert.Equal(t, newUser.Age, userUpdated.Age)
+	assert.Equal(t, newUser.FirstName, userUpdated.FirstName)
+	assert.Equal(t, newUser.LastName, userUpdated.LastName)
+	assert.Equal(t, newUser.Username, userUpdated.Username)
+	assert.Equal(t, newUser.Email, userUpdated.Email)
 }
 
 func TestUserRepoDelete(t *testing.T) {
