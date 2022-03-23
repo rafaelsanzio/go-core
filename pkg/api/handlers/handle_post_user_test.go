@@ -22,8 +22,10 @@ func TestHandlePostUser(t *testing.T) {
 	goodReq = mux.SetURLVars(goodReq, map[string]string{})
 
 	body, err := json.Marshal(UserEntityPayload{
-		Name: "John Doe",
-		Age:  "38",
+		FirstName: "John",
+		LastName:  "Doe",
+		Username:  "johndoe",
+		Email:     "john@mail.com",
 	})
 	assert.Equal(t, nil, err)
 
@@ -67,14 +69,18 @@ func TestHandlePostUser(t *testing.T) {
 
 func TestConvertPayloadToUser(t *testing.T) {
 	inPayload := UserEntityPayload{
-		Name: "John Doe",
-		Age:  "38",
+		FirstName: "John",
+		LastName:  "Doe",
+		Username:  "johndoe",
+		Email:     "john@mail.com",
 	}
 
 	expectedUser := user.User{
-		ID:   "",
-		Name: "John Doe",
-		Age:  38,
+		ID:        "",
+		FirstName: "John",
+		LastName:  "Doe",
+		Username:  "johndoe",
+		Email:     "john@mail.com",
 	}
 
 	testCases := []struct {
@@ -89,11 +95,6 @@ func TestConvertPayloadToUser(t *testing.T) {
 			Payload:      inPayload,
 			ExpectedUser: expectedUser,
 			ExpectError:  false,
-		}, {
-			Name:          "Test Case: 2 - error errs.ErrConvertingStringToInt",
-			Payload:       UserEntityPayload{},
-			ExpectError:   true,
-			ExpectedError: "CMN010: error converting string to int, err: [strconv.Atoi: parsing \"\": invalid syntax]",
 		},
 	}
 
@@ -106,8 +107,10 @@ func TestConvertPayloadToUser(t *testing.T) {
 			assert.Equal(t, err.Error(), tc.ExpectedError)
 		} else {
 			assert.Equal(t, tc.ExpectedUser.ID, user.ID)
-			assert.Equal(t, tc.ExpectedUser.Name, user.Name)
-			assert.Equal(t, tc.ExpectedUser.Age, user.Age)
+			assert.Equal(t, tc.ExpectedUser.FirstName, user.FirstName)
+			assert.Equal(t, tc.ExpectedUser.LastName, user.LastName)
+			assert.Equal(t, tc.ExpectedUser.Username, user.Username)
+			assert.Equal(t, tc.ExpectedUser.Email, user.Email)
 		}
 	}
 }
@@ -117,8 +120,10 @@ func TestDecodeUserRequest(t *testing.T) {
 	goodReq = mux.SetURLVars(goodReq, map[string]string{})
 
 	body, err := json.Marshal(UserEntityPayload{
-		Name: "John Doe",
-		Age:  "38",
+		FirstName: "John",
+		LastName:  "Doe",
+		Username:  "johndoe",
+		Email:     "john@mail.com",
 	})
 	assert.Equal(t, nil, err)
 
@@ -136,8 +141,10 @@ func TestDecodeUserRequest(t *testing.T) {
 		{
 			Name:    "Test Case: 1 - correct body, no error",
 			Request: goodReq, Payload: &UserEntityPayload{
-				Name: "John Doe",
-				Age:  "38",
+				FirstName: "John",
+				LastName:  "Doe",
+				Username:  "johndoe",
+				Email:     "john@mail.com",
 			}, ExpectedError: false,
 		},
 		{Name: "Test Case: 2 - no body, error found", Request: noBodyReq, Payload: nil, ExpectedError: true},
@@ -150,8 +157,10 @@ func TestDecodeUserRequest(t *testing.T) {
 		if tc.ExpectedError {
 			assert.NotNil(t, err)
 		} else {
-			assert.Equal(t, tc.Payload.Name, decodedPayload.Name)
-			assert.Equal(t, tc.Payload.Age, decodedPayload.Age)
+			assert.Equal(t, tc.Payload.FirstName, decodedPayload.FirstName)
+			assert.Equal(t, tc.Payload.LastName, decodedPayload.LastName)
+			assert.Equal(t, tc.Payload.Username, decodedPayload.Username)
+			assert.Equal(t, tc.Payload.Email, decodedPayload.Email)
 		}
 	}
 }

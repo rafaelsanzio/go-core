@@ -23,8 +23,10 @@ func TestHandleUpdateUser(t *testing.T) {
 	goodReq = mux.SetURLVars(goodReq, map[string]string{})
 
 	body, err := json.Marshal(UserEntityPayload{
-		Name: "John Doe",
-		Age:  "38",
+		FirstName: "John",
+		LastName:  "Doe",
+		Username:  "johndoe",
+		Email:     "john@mail.com",
 	})
 	assert.Equal(t, nil, err)
 
