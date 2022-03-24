@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/rafaelsanzio/go-core/pkg/applog"
 	"github.com/rafaelsanzio/go-core/pkg/errs"
@@ -47,14 +46,11 @@ func decodeUserRequest(r *http.Request) (UserEntityPayload, errs.AppError) {
 }
 
 func convertPayloadToUser(u UserEntityPayload) (user.User, errs.AppError) {
-	age, err := strconv.Atoi(u.Age)
-	if err != nil {
-		return user.User{}, errs.ErrConvertingStringToInt.Throwf(applog.Log, errs.ErrFmt, err)
-	}
-
 	result := user.User{
-		Name: u.Name,
-		Age:  age,
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		Username:  u.Username,
+		Email:     u.Email,
 	}
 
 	return result, nil
