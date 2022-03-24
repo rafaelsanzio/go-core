@@ -21,7 +21,7 @@ func TestHandleListUser(t *testing.T) {
 			userMock := model.PrototypeUser()
 
 			userMock2 := model.PrototypeUser()
-			userMock2.Name = "John Doe 2"
+			userMock2.FirstName = "John 2"
 
 			userMockList := []user.User{userMock, userMock2}
 

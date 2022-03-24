@@ -23,6 +23,9 @@ func TestHandleGetUser(t *testing.T) {
 				userMock := model.PrototypeUser()
 				return &userMock, nil
 			}
+			if id == "2" {
+				return nil, errs.ErrUnknownErrorType
+			}
 
 			return nil, nil
 		},
@@ -43,6 +46,11 @@ func TestHandleGetUser(t *testing.T) {
 			Name:               "Not Found handle get user",
 			ID:                 "",
 			ExpectedStatusCode: 404,
+		},
+		{
+			Name:               "Error getting repo user",
+			ID:                 "2",
+			ExpectedStatusCode: 500,
 		},
 	}
 
