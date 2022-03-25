@@ -1,2 +1,5 @@
 main
 vendor
+
+coverage.html
+coverage.out
