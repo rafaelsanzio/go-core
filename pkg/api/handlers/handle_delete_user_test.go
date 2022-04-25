@@ -18,7 +18,7 @@ func mockDeleteUserFunc(ctx context.Context, id string) errs.AppError {
 }
 
 func mockDeleteUserThrowFunc(ctx context.Context, id string) errs.AppError {
-	return errs.ErrMongoDeleteOne
+	return errs.ErrRepoMockAction
 }
 
 func TestHandleDeleteUser(t *testing.T) {
