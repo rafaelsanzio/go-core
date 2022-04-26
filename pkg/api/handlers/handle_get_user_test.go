@@ -16,46 +16,52 @@ import (
 	"github.com/rafaelsanzio/go-core/pkg/user"
 )
 
+func mockGetUserFunc(ctx context.Context, id string) (*user.User, errs.AppError) {
+	if id == "1" {
+		userMock := model.PrototypeUser()
+		return &userMock, nil
+	}
+	return nil, nil
+}
+
+func mockGetUserThrowFunc(ctx context.Context, id string) (*user.User, errs.AppError) {
+	return nil, errs.ErrRepoMockAction
+}
+
 func TestHandleGetUser(t *testing.T) {
-	repo.SetUserRepo(repo.MockUserRepo{
-		GetFunc: func(ctx context.Context, id string) (*user.User, errs.AppError) {
-			if id == "1" {
-				userMock := model.PrototypeUser()
-				return &userMock, nil
-			}
-			if id == "2" {
-				return nil, errs.ErrUnknownErrorType
-			}
-
-			return nil, nil
-		},
-	})
-	defer repo.SetUserRepo(nil)
-
 	testCases := []struct {
-		Name               string
-		ID                 string
-		ExpectedStatusCode int
+		Name                  string
+		ID                    string
+		HandleGetUserFunction func(ctx context.Context, id string) (*user.User, errs.AppError)
+		ExpectedStatusCode    int
 	}{
 		{
-			Name:               "Success handle get user",
-			ID:                 "1",
-			ExpectedStatusCode: 200,
+			Name:                  "Success handle get user",
+			ID:                    "1",
+			HandleGetUserFunction: mockGetUserFunc,
+			ExpectedStatusCode:    200,
 		},
 		{
-			Name:               "Not Found handle get user",
-			ID:                 "",
-			ExpectedStatusCode: 404,
+			Name:                  "Not Found handle get user",
+			ID:                    "",
+			HandleGetUserFunction: mockGetUserFunc,
+			ExpectedStatusCode:    404,
 		},
 		{
-			Name:               "Error getting repo user",
-			ID:                 "2",
-			ExpectedStatusCode: 500,
+			Name:                  "Error getting repo user",
+			ID:                    "1",
+			HandleGetUserFunction: mockGetUserThrowFunc,
+			ExpectedStatusCode:    500,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Log(tc.Name)
+
+		repo.SetUserRepo(repo.MockUserRepo{
+			GetFunc: tc.HandleGetUserFunction,
+		})
+		defer repo.SetUserRepo(nil)
 
 		req, err := http.NewRequest(http.MethodGet, "users/:id", nil)
 		req = mux.SetURLVars(req, map[string]string{"id": tc.ID})
