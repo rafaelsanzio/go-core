@@ -15,33 +15,46 @@ import (
 	"github.com/rafaelsanzio/go-core/pkg/user"
 )
 
+func mockListUserFunc(ctx context.Context) ([]user.User, errs.AppError) {
+	userMock := model.PrototypeUser()
+
+	userMock2 := model.PrototypeUser()
+	userMock2.FirstName = "John 2"
+
+	userMockList := []user.User{userMock, userMock2}
+
+	return userMockList, nil
+}
+
+func mockListUserThrowFunc(ctx context.Context) ([]user.User, errs.AppError) {
+	return nil, errs.ErrRepoMockAction
+}
+
 func TestHandleListUser(t *testing.T) {
-	repo.SetUserRepo(repo.MockUserRepo{
-		ListFunc: func(ctx context.Context) ([]user.User, errs.AppError) {
-			userMock := model.PrototypeUser()
-
-			userMock2 := model.PrototypeUser()
-			userMock2.FirstName = "John 2"
-
-			userMockList := []user.User{userMock, userMock2}
-
-			return userMockList, nil
-		},
-	})
-	defer repo.SetUserRepo(nil)
-
 	testCases := []struct {
-		Name               string
-		ExpectedStatusCode int
+		Name                   string
+		HandleListUserFunction func(ctx context.Context) ([]user.User, errs.AppError)
+		ExpectedStatusCode     int
 	}{
 		{
-			Name:               "Success handle list user",
-			ExpectedStatusCode: 200,
+			Name:                   "Success handle list user",
+			HandleListUserFunction: mockListUserFunc,
+			ExpectedStatusCode:     200,
+		},
+		{
+			Name:                   "Throwing handle list user",
+			HandleListUserFunction: mockListUserThrowFunc,
+			ExpectedStatusCode:     500,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Log(tc.Name)
+
+		repo.SetUserRepo(repo.MockUserRepo{
+			ListFunc: tc.HandleListUserFunction,
+		})
+		defer repo.SetUserRepo(nil)
 
 		req, err := http.NewRequest(http.MethodGet, "/users", nil)
 		assert.NoError(t, err)
