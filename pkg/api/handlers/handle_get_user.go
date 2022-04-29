@@ -10,6 +10,8 @@ import (
 	"github.com/rafaelsanzio/go-core/pkg/repo"
 )
 
+var jsonMarshal = json.Marshal
+
 func HandleGetUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	vars := mux.Vars(r)
@@ -27,7 +29,7 @@ func HandleGetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err_ := json.Marshal(user)
+	data, err_ := jsonMarshal(user)
 	if err_ != nil {
 		_ = errs.ErrMarshalingJson.Throwf(applog.Log, errs.ErrFmt, err_)
 		httpInternalServerError(w)
