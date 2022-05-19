@@ -18,6 +18,14 @@ import (
 	"github.com/rafaelsanzio/go-core/pkg/user"
 )
 
+func mockUpdateUserFunc(ctx context.Context, u user.User) (*user.User, errs.AppError) {
+	return &u, nil
+}
+
+func mockUpdateUserThrowFunc(ctx context.Context, u user.User) (*user.User, errs.AppError) {
+	return nil, errs.ErrRepoMockAction
+}
+
 func TestHandleUpdateUser(t *testing.T) {
 	goodReq := httptest.NewRequest(http.MethodPut, fmt.Sprintf("/users/%s", "1"), nil)
 	goodReq = mux.SetURLVars(goodReq, map[string]string{})
@@ -35,35 +43,47 @@ func TestHandleUpdateUser(t *testing.T) {
 	noBodyReq := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/users/%s", "1"), nil)
 	noBodyReq = mux.SetURLVars(noBodyReq, map[string]string{})
 
-	repo.SetUserRepo(repo.MockUserRepo{
-		UpdateFunc: func(ctx context.Context, u user.User) (*user.User, errs.AppError) {
-			return &u, nil
-		},
-	})
-	defer repo.SetUserRepo(nil)
+	throwReq := httptest.NewRequest(http.MethodPut, fmt.Sprintf("/users/%s", "1"), nil)
+	throwReq = mux.SetURLVars(throwReq, map[string]string{})
+
+	throwReq.Body = ioutil.NopCloser(bytes.NewReader(body))
 
 	testCases := []struct {
-		Name               string
-		Request            *http.Request
-		ExpectedStatusCode int
+		Name                 string
+		Request              *http.Request
+		HandleUpdateFunction func(ctx context.Context, u user.User) (*user.User, errs.AppError)
+		ExpectedStatusCode   int
 	}{
 		{
-			Name:               "Should return 200 if successful",
-			Request:            goodReq,
-			ExpectedStatusCode: 200,
+			Name:                 "Should return 200 if successful",
+			Request:              goodReq,
+			HandleUpdateFunction: mockUpdateUserFunc,
+			ExpectedStatusCode:   200,
 		}, {
-			Name:               "Should return 422 bad request",
-			Request:            noBodyReq,
-			ExpectedStatusCode: 422,
+			Name:                 "Throwing error on function",
+			Request:              throwReq,
+			HandleUpdateFunction: mockUpdateUserThrowFunc,
+			ExpectedStatusCode:   500,
+		}, {
+			Name:                 "Should return 422 bad request",
+			Request:              noBodyReq,
+			HandleUpdateFunction: mockUpdateUserFunc,
+			ExpectedStatusCode:   422,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Log(tc.Name)
 
+		repo.SetUserRepo(repo.MockUserRepo{
+			UpdateFunc: tc.HandleUpdateFunction,
+		})
+		defer repo.SetUserRepo(nil)
+
 		w := httptest.NewRecorder()
 
 		HandleUpdateUser(w, tc.Request)
+		fmt.Println("w.Code", w.Code)
 		assert.Equal(t, tc.ExpectedStatusCode, w.Code)
 	}
 }
