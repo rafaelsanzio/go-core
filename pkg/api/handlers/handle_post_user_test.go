@@ -17,10 +17,15 @@ import (
 	"github.com/rafaelsanzio/go-core/pkg/user"
 )
 
-func TestHandlePostUser(t *testing.T) {
-	goodReq := httptest.NewRequest(http.MethodPost, "/users", nil)
-	goodReq = mux.SetURLVars(goodReq, map[string]string{})
+func mockPostUserFunc(ctx context.Context, user user.User) errs.AppError {
+	return nil
+}
 
+func mockPostUserThrowFunc(ctx context.Context, user user.User) errs.AppError {
+	return errs.ErrRepoMockAction
+}
+
+func TestHandlePostUser(t *testing.T) {
 	body, err := json.Marshal(UserEntityPayload{
 		FirstName: "John",
 		LastName:  "Doe",
@@ -29,36 +34,49 @@ func TestHandlePostUser(t *testing.T) {
 	})
 	assert.Equal(t, nil, err)
 
+	goodReq := httptest.NewRequest(http.MethodPost, "/users", nil)
+	goodReq = mux.SetURLVars(goodReq, map[string]string{})
 	goodReq.Body = ioutil.NopCloser(bytes.NewReader(body))
 
 	noBodyReq := httptest.NewRequest(http.MethodPost, "/users", nil)
 	noBodyReq = mux.SetURLVars(noBodyReq, map[string]string{})
 
-	repo.SetUserRepo(repo.MockUserRepo{
-		InsertFunc: func(ctx context.Context, user user.User) errs.AppError {
-			return nil
-		},
-	})
-	defer repo.SetUserRepo(nil)
+	throwReq := httptest.NewRequest(http.MethodPost, "/users", nil)
+	throwReq = mux.SetURLVars(throwReq, map[string]string{})
+
+	throwReq.Body = ioutil.NopCloser(bytes.NewReader(body))
 
 	testCases := []struct {
 		Name               string
 		Request            *http.Request
+		HandlePostFunction func(ctx context.Context, user user.User) errs.AppError
 		ExpectedStatusCode int
 	}{
 		{
 			Name:               "Should return 201 if successful",
 			Request:            goodReq,
+			HandlePostFunction: mockPostUserFunc,
 			ExpectedStatusCode: 201,
 		}, {
 			Name:               "Should return 422 bad request",
 			Request:            noBodyReq,
+			HandlePostFunction: mockPostUserFunc,
 			ExpectedStatusCode: 422,
+		}, {
+			Name:               "Should return 500 throwing error on function",
+			Request:            throwReq,
+			HandlePostFunction: mockPostUserThrowFunc,
+			ExpectedStatusCode: 500,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Log(tc.Name)
+
+		repo.SetUserRepo(repo.MockUserRepo{
+			InsertFunc: tc.HandlePostFunction,
+		})
+		defer repo.SetUserRepo(nil)
 
 		w := httptest.NewRecorder()
 
@@ -116,9 +134,6 @@ func TestConvertPayloadToUser(t *testing.T) {
 }
 
 func TestDecodeUserRequest(t *testing.T) {
-	goodReq := httptest.NewRequest(http.MethodPost, "/users", nil)
-	goodReq = mux.SetURLVars(goodReq, map[string]string{})
-
 	body, err := json.Marshal(UserEntityPayload{
 		FirstName: "John",
 		LastName:  "Doe",
@@ -126,6 +141,9 @@ func TestDecodeUserRequest(t *testing.T) {
 		Email:     "john@mail.com",
 	})
 	assert.Equal(t, nil, err)
+
+	goodReq := httptest.NewRequest(http.MethodPost, "/users", nil)
+	goodReq = mux.SetURLVars(goodReq, map[string]string{})
 
 	goodReq.Body = ioutil.NopCloser(bytes.NewReader(body))
 
