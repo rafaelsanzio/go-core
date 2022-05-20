@@ -27,9 +27,6 @@ func mockUpdateUserThrowFunc(ctx context.Context, u user.User) (*user.User, errs
 }
 
 func TestHandleUpdateUser(t *testing.T) {
-	goodReq := httptest.NewRequest(http.MethodPut, fmt.Sprintf("/users/%s", "1"), nil)
-	goodReq = mux.SetURLVars(goodReq, map[string]string{})
-
 	body, err := json.Marshal(UserEntityPayload{
 		FirstName: "John",
 		LastName:  "Doe",
@@ -37,6 +34,9 @@ func TestHandleUpdateUser(t *testing.T) {
 		Email:     "john@mail.com",
 	})
 	assert.Equal(t, nil, err)
+
+	goodReq := httptest.NewRequest(http.MethodPut, fmt.Sprintf("/users/%s", "1"), nil)
+	goodReq = mux.SetURLVars(goodReq, map[string]string{})
 
 	goodReq.Body = ioutil.NopCloser(bytes.NewReader(body))
 
