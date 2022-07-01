@@ -83,7 +83,7 @@ func TestHandleUpdateUser(t *testing.T) {
 		w := httptest.NewRecorder()
 
 		HandleUpdateUser(w, tc.Request)
-		fmt.Println("w.Code", w.Code)
+
 		assert.Equal(t, tc.ExpectedStatusCode, w.Code)
 	}
 }
